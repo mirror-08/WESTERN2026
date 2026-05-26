@@ -114,6 +114,10 @@
 
   /* 캘린더 필터 */
   .cal-filter { margin-bottom: 10px; }
+  .cal-filter-row { display: flex; align-items: center; gap: 6px; margin-bottom: 5px; flex-wrap: wrap; }
+  .cal-filter-label { font-size: 11px; color: var(--text3); font-weight: 600; min-width: 52px; text-align: right; flex-shrink: 0; }
+  .cal-chip { padding: 3px 9px; border-radius: 12px; font-size: 11px; border: 1px solid var(--border); background: var(--bg2); color: var(--text2); cursor: pointer; white-space: nowrap; }
+  .cal-chip.active { background: var(--accent); color: #fff; border-color: var(--accent); }
 
   /* 날짜 클릭 패널 */
   .cal-day-panel { background: var(--bg1); border-radius: var(--radius); border: 1px solid var(--border); margin-top: 8px; overflow: hidden; }
@@ -344,11 +348,68 @@
     <button class="btn btn-primary btn-sm" onclick="openAddRecord()">+ 기록</button>
   </div>
   <div class="cal-filter">
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
-      <span style="font-size:11px;color:var(--text3);font-weight:600;flex-shrink:0;">배우 검색</span>
-      <input type="text" id="cal-search" class="form-control" placeholder="배우 이름 검색..." oninput="onCalSearch()" style="font-size:14px;padding:6px 10px;">
+    <div class="cal-filter-row">
+      <span class="cal-filter-label">제인</span>
+      <div id="cal-chips-jane" style="display:flex;gap:6px;flex-wrap:wrap;">
+        <button class="cal-chip active" onclick="setCalFilter('jane',null,this)">전체</button>
+        <button class="cal-chip" onclick="setCalFilter('jane','조영화',this)">조영화</button>
+        <button class="cal-chip" onclick="setCalFilter('jane','이채원',this)">이채원</button>
+        <button class="cal-chip" onclick="setCalFilter('jane','표바하',this)">표바하</button>
+      </div>
     </div>
-    <div id="cal-filter-hint" style="font-size:11px;color:var(--text3);padding:2px 0 4px;">이름을 입력하면 해당 회차가 표시됩니다</div>
+    <div class="cal-filter-row">
+      <span class="cal-filter-label">빌리</span>
+      <div id="cal-chips-billy" style="display:flex;gap:6px;flex-wrap:wrap;">
+        <button class="cal-chip active" onclick="setCalFilter('billy',null,this)">전체</button>
+        <button class="cal-chip" onclick="setCalFilter('billy','박규원',this)">박규원</button>
+        <button class="cal-chip" onclick="setCalFilter('billy','정욱진',this)">정욱진</button>
+        <button class="cal-chip" onclick="setCalFilter('billy','홍기범',this)">홍기범</button>
+      </div>
+    </div>
+    <div class="cal-filter-row">
+      <span class="cal-filter-label">와이어트</span>
+      <div id="cal-chips-wyatt" style="display:flex;gap:6px;flex-wrap:wrap;">
+        <button class="cal-chip active" onclick="setCalFilter('wyatt',null,this)">전체</button>
+        <button class="cal-chip" onclick="setCalFilter('wyatt','김도빈',this)">김도빈</button>
+        <button class="cal-chip" onclick="setCalFilter('wyatt','송원근',this)">송원근</button>
+        <button class="cal-chip" onclick="setCalFilter('wyatt','최호승',this)">최호승</button>
+      </div>
+    </div>
+    <div class="cal-filter-row">
+      <span class="cal-filter-label">조세핀</span>
+      <div id="cal-chips-josephine" style="display:flex;gap:6px;flex-wrap:wrap;">
+        <button class="cal-chip active" onclick="setCalFilter('josephine',null,this)">전체</button>
+        <button class="cal-chip" onclick="setCalFilter('josephine','한보라',this)">한보라</button>
+        <button class="cal-chip" onclick="setCalFilter('josephine','최수진',this)">최수진</button>
+        <button class="cal-chip" onclick="setCalFilter('josephine','주다온',this)">주다온</button>
+      </div>
+    </div>
+    <div class="cal-filter-row">
+      <span class="cal-filter-label">조니</span>
+      <div id="cal-chips-johnny" style="display:flex;gap:6px;flex-wrap:wrap;">
+        <button class="cal-chip active" onclick="setCalFilter('johnny',null,this)">전체</button>
+        <button class="cal-chip" onclick="setCalFilter('johnny','원종환',this)">원종환</button>
+        <button class="cal-chip" onclick="setCalFilter('johnny','정상윤',this)">정상윤</button>
+        <button class="cal-chip" onclick="setCalFilter('johnny','최호중',this)">최호중</button>
+      </div>
+    </div>
+    <div class="cal-filter-row">
+      <span class="cal-filter-label">버드</span>
+      <div id="cal-chips-bud" style="display:flex;gap:6px;flex-wrap:wrap;">
+        <button class="cal-chip active" onclick="setCalFilter('bud',null,this)">전체</button>
+        <button class="cal-chip" onclick="setCalFilter('bud','박세훈',this)">박세훈</button>
+        <button class="cal-chip" onclick="setCalFilter('bud','이동희',this)">이동희</button>
+      </div>
+    </div>
+    <div class="cal-filter-row">
+      <span class="cal-filter-label">해리</span>
+      <div id="cal-chips-harry" style="display:flex;gap:6px;flex-wrap:wrap;">
+        <button class="cal-chip active" onclick="setCalFilter('harry',null,this)">전체</button>
+        <button class="cal-chip" onclick="setCalFilter('harry','신준석',this)">신준석</button>
+        <button class="cal-chip" onclick="setCalFilter('harry','신은호',this)">신은호</button>
+      </div>
+    </div>
+    <div id="cal-filter-hint" style="font-size:11px;color:var(--text3);padding:2px 0 4px;">· 전체 회차 표시 중</div>
   </div>
   <div class="card" style="padding:12px;">
     <div class="cal-nav">
@@ -1453,7 +1514,7 @@ function renderHome() {
 // CALENDAR
 // ============================================================
 let calYear, calMonth;
-let calSearchText = '';
+const calFilter = { jane:null, billy:null, wyatt:null, josephine:null, johnny:null, bud:null, harry:null };
 let calSelectedDs = null;
 
 function initCal() {
@@ -1465,22 +1526,24 @@ function initCal() {
 function calPrev() { calMonth--; if(calMonth<0){calMonth=11;calYear--;} calSelectedDs=null; renderCalendar(); }
 function calNext() { calMonth++; if(calMonth>11){calMonth=0;calYear++;} calSelectedDs=null; renderCalendar(); }
 
-function onCalSearch() {
-  calSearchText = (document.getElementById('cal-search')?.value||'').trim();
+function setCalFilter(field, name, btn) {
+  calFilter[field] = name;
+  document.querySelectorAll(`#cal-chips-${field} .cal-chip`).forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
   updateCalFilterHint();
   renderCalendar();
 }
 function updateCalFilterHint() {
   const el = document.getElementById('cal-filter-hint');
   if (!el) return;
-  el.textContent = calSearchText
-    ? `· "${calSearchText}" 포함 회차 표시 중`
-    : '이름을 입력하면 해당 회차가 표시됩니다';
+  const active = Object.values(calFilter).filter(Boolean);
+  el.textContent = active.length
+    ? `· ${active.join(' · ')} 회차 표시 중`
+    : '· 전체 회차 표시 중';
 }
 
-function scheduleMatchesSearch(s, txt) {
-  if (!txt) return true;
-  return ROLE_DEFS.some(d => s[d.field] && s[d.field].includes(txt));
+function scheduleMatchesFilter(s) {
+  return Object.entries(calFilter).every(([field, name]) => !name || s[field] === name);
 }
 
 function getEventsForDate(ds, events) {
@@ -1553,7 +1616,7 @@ function renderCalendar() {
       const ds      = `${monthStr}-${String(day).padStart(2,'0')}`;
       const dow2    = new Date(calYear, calMonth, day).getDay();
       const daySch  = schByDate[ds] || [];
-      const filteredDaySch = daySch.filter(s => scheduleMatchesSearch(s, calSearchText));
+      const filteredDaySch = daySch.filter(s => scheduleMatchesFilter(s));
 
       let cls = 'cal-day';
       if (ds === todayStr)      cls += ' today';
