@@ -1,0 +1,23 @@
+{
+  "name": "웨스턴스토리 2026",
+  "short_name": "웨스턴",
+  "description": "뮤지컬 웨스턴스토리 2026 관람 기록 앱",
+  "start_url": "/WESTERN2026/",
+  "scope": "/WESTERN2026/",
+  "display": "standalone",
+  "background_color": "#f8f8f6",
+  "theme_color": "#C8971A",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
