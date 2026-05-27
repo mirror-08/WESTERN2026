@@ -140,7 +140,7 @@
 
   /* HEATMAP */
   .heatmap-scroll { overflow-x: auto; }
-  .heatmap-wrap { display: flex; flex-direction: column; gap: 4px; align-items: center; padding: 8px 0; }
+  .heatmap-wrap { display: flex; flex-direction: column; gap: 4px; align-items: center; padding: 8px 0; justify-content: center; }
   .seat-grid { display: flex; flex-direction: column; gap: 2px; }
   .seat-row { display: flex; gap: 1px; align-items: center; justify-content: center; }
   .row-label { font-size: 8px; color: var(--text3); width: 20px; flex-shrink: 0; text-align: right; white-space: nowrap; }
@@ -1401,7 +1401,7 @@ function openDetail(id) {
 
   let html = `<div class="casting-display">`;
   ROLE_DEFS.forEach(rd => {
-    if (r[rd.field]) html += `<div class="casting-tag ${rd.cls}"><span style="font-size:9px;opacity:0.7;">${rd.short} </span>${r[rd.field]}</div>`;
+    if (r[rd.field]) html += `<div class="casting-tag ${rd.cls}"><span style="font-size:10px;opacity:0.85;">${rd.short} </span>${r[rd.field]}</div>`;
   });
   html += `</div>`;
 
@@ -1484,7 +1484,7 @@ function renderHome() {
     const diff   = Math.round((d-todayD)/86400000);
     const dday   = diff===0 ? 'D-DAY' : `D-${diff}`;
     const seat   = nextShow.seatFloor ? (nextShow.seatRow != null ? `${nextShow.seatFloor}층 ${nextShow.seatRow}열 ${nextShow.seatNumber}번` : `${nextShow.seatFloor}층 ${nextShow.seatNumber}번`) : '';
-    const castPills = ROLE_DEFS.map(rd => nextShow[rd.field] ? `<span class="next-show-pill">${nextShow[rd.field]}</span>` : '').filter(Boolean).join('');
+    const castPills = ROLE_DEFS.map(rd => nextShow[rd.field] ? `<span class="next-show-pill"><span style="font-size:9px;opacity:0.8;">${rd.short} </span>${nextShow[rd.field]}</span>` : '').filter(Boolean).join('');
     document.getElementById('home-next-show').innerHTML = `
       <div class="next-show-card" onclick="openDetail('${nextShow.id}')">
         <div class="next-show-dday${diff===0?' today-dday':''}">${dday}${nextShow.isBooked===false?' <span style="font-size:14px;opacity:0.7;font-weight:400;">미정</span>':''}</div>
@@ -1887,7 +1887,7 @@ function renderHeatmap() {
     html += '</div>';
   }
   html += '</div>';
-  document.getElementById('heatmap').innerHTML = html;
+  document.getElementById('heatmap').innerHTML = `<div style="display:flex;justify-content:center;">${html}</div>`;
 }
 
 // ============================================================
