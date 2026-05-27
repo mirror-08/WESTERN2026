@@ -1,4 +1,4 @@
-const CACHE_NAME = 'western2026-v9';
+const CACHE_NAME = 'western2026-v10';
 const BASE = '/WESTERN2026';
 
 // 앱 시작 시 캐시할 파일들
