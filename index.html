@@ -1690,7 +1690,8 @@ function renderCalendar() {
           const chipCls  = isBooked ? 'cal-session-chip booked' : isDone ? 'cal-session-chip done' : 'cal-session-chip';
           const icon     = isDone ? '✅ ' : '';
           const firstActor = ROLE_DEFS.map(d => s[d.field]).find(Boolean) || '';
-          return `<div class="${chipCls}"><span class="cs-time">${icon}${s.time}</span><span class="cs-cast">${firstActor}</span></div>`;
+          const firstActorShort = firstActor.length > 2 ? firstActor.slice(1) : firstActor;
+          return `<div class="${chipCls}"><span class="cs-time">${icon}${s.time}</span><span class="cs-cast">${firstActorShort}</span></div>`;
         }).join('');
       }
 
