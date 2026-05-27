@@ -255,7 +255,14 @@
   .next-show-dday.today-dday { color: #ffe066; }
   .next-show-date { font-size: 12px; opacity: 0.85; margin-bottom: 6px; }
   .next-show-casting { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 6px; }
-  .next-show-pill { padding: 3px 8px; border-radius: 20px; font-size: 10px; font-weight: 600; background: rgba(255,255,255,0.22); white-space: nowrap; }
+  .next-show-pill { padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+  .next-show-pill.jane       { background: rgba(255,180,200,0.30); }
+  .next-show-pill.billy      { background: rgba(160,200,255,0.30); }
+  .next-show-pill.wyatt      { background: rgba(150,220,210,0.30); }
+  .next-show-pill.josephine  { background: rgba(160,230,190,0.30); }
+  .next-show-pill.johnny     { background: rgba(210,170,255,0.30); }
+  .next-show-pill.bud        { background: rgba(255,220,160,0.30); }
+  .next-show-pill.harry      { background: rgba(200,215,225,0.30); }
   .next-show-seat { font-size: 12px; opacity: 0.75; }
 
   .upcoming-item { display: flex; align-items: center; padding: 9px 0; border-bottom: 1px solid var(--border); cursor: pointer; gap: 8px; }
@@ -1484,7 +1491,7 @@ function renderHome() {
     const diff   = Math.round((d-todayD)/86400000);
     const dday   = diff===0 ? 'D-DAY' : `D-${diff}`;
     const seat   = nextShow.seatFloor ? (nextShow.seatRow != null ? `${nextShow.seatFloor}층 ${nextShow.seatRow}열 ${nextShow.seatNumber}번` : `${nextShow.seatFloor}층 ${nextShow.seatNumber}번`) : '';
-    const castPills = ROLE_DEFS.map(rd => nextShow[rd.field] ? `<span class="next-show-pill"><span style="font-size:9px;opacity:0.8;">${rd.short} </span>${nextShow[rd.field]}</span>` : '').filter(Boolean).join('');
+    const castPills = ROLE_DEFS.map(rd => nextShow[rd.field] ? `<span class="next-show-pill ${rd.cls}"><span style="font-size:9px;opacity:0.8;font-weight:400;">${rd.short} </span>${nextShow[rd.field]}</span>` : '').filter(Boolean).join('');
     document.getElementById('home-next-show').innerHTML = `
       <div class="next-show-card" onclick="openDetail('${nextShow.id}')">
         <div class="next-show-dday${diff===0?' today-dday':''}">${dday}${nextShow.isBooked===false?' <span style="font-size:14px;opacity:0.7;font-weight:400;">미정</span>':''}</div>
