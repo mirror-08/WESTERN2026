@@ -984,12 +984,54 @@ const COUPON_ITEMS = [
 // ============================================================
 // SEAT FUNCTIONS
 // ============================================================
+// 열별 좌석 범위: L=좌(1-6), C=중앙, R=우 — null=해당 구역 없음
+const SEAT_1F = [
+  null,
+  { L:[4,6], C:[7,18], R:[20,22] }, // 1열
+  { L:[4,6], C:[7,19], R:[20,22] }, // 2열
+  { L:[3,6], C:[7,18], R:[20,23] }, // 3열
+  { L:[2,6], C:[7,17], R:[20,24] }, // 4열
+  { L:[2,6], C:[7,18], R:[20,24] }, // 5열
+  { L:[1,6], C:[7,17], R:[20,25] }, // 6열
+  { L:[1,6], C:[7,16], R:[20,25] }, // 7열 (GATE 1)
+  { L:[1,6], C:[7,17], R:[20,25] }, // 8열
+  { L:[3,6], C:[7,16], R:[20,25] }, // 9열
+  { L:[3,6], C:[7,17], R:[20,25] }, // 10열
+  { L:null,  C:[7,15], R:[20,25] }, // 11열
+  { L:[3,6], C:[7,16], R:[20,25] }, // 12열 (GATE 2)
+  { L:[1,6], C:[7,17], R:[20,25] }, // 13열
+  { L:[1,6], C:[7,16], R:[20,25] }, // 14열
+  { L:[1,6], C:[7,17], R:[20,25] }, // 15열
+  { L:[1,6], C:[7,16], R:[20,25] }, // 16열
+  { L:[1,6], C:[7,17], R:[20,25] }, // 17열
+  { L:[3,6], C:[7,16], R:[20,25] }, // 18열
+  { L:[3,6], C:null,   R:[20,25] }, // 19열
+  { L:[2,6], C:null,   R:[20,25] }, // 20열
+];
+const SEAT_2F = [
+  null,
+  { L:null,  C:[7,17], R:[18,24] }, // 1열 (GATE 3, 좌측 휠체어만)
+  { L:[1,6], C:[7,17], R:[18,24] }, // 2열
+  { L:[1,6], C:[7,17], R:[18,24] }, // 3열
+  { L:[1,6], C:[7,17], R:[18,24] }, // 4열
+  { L:[1,6], C:[7,17], R:[18,24] }, // 5열
+  { L:[1,6], C:[7,17], R:[18,24] }, // 6열
+  { L:[1,6], C:[7,17], R:[18,24] }, // 7열
+  { L:[1,6], C:[7,17], R:[18,24] }, // 8열
+  { L:[3,6], C:[8,17], R:[18,24] }, // 9열
+  { L:null,  C:[9,17], R:[18,24] }, // 10열
+];
+
+function inRange(n, r) { return r && n >= r[0] && n <= r[1]; }
+
 function seatExists(floor, row, num) {
   floor = parseInt(floor); row = parseInt(row); num = parseInt(num);
   if (isNaN(floor) || isNaN(row) || isNaN(num)) return false;
-  if (floor === 1) return row >= 1 && row <= 20 && num >= 1 && num <= 25;
-  if (floor === 2) return row >= 1 && row <= 10 && num >= 1 && num <= 24;
-  return false;
+  const table = floor === 1 ? SEAT_1F : floor === 2 ? SEAT_2F : null;
+  if (!table) return false;
+  const rd = table[row];
+  if (!rd) return false;
+  return inRange(num, rd.L) || inRange(num, rd.C) || inRange(num, rd.R);
 }
 
 function onFloorChange() {
@@ -1014,25 +1056,34 @@ function buildMiniSeat(hlFloor, hlRow, hlNum) {
       seatMap[k] = (seatMap[k]||0) + 1;
     }
   });
-  const cls = c => !c ? '' : c >= 5 ? 'v5' : 'v' + c;
-  const C = 8, GAP = 1;
-  const floorInt = parseInt(hlFloor);
-  const maxRow = floorInt === 1 ? 20 : 10;
-  const maxNum = floorInt === 1 ? 25 : 24;
+  const cls  = c => !c ? '' : c >= 5 ? 'v5' : 'v' + c;
+  const C = 7, GAP = 1, AISLE = 3;
+  const f = parseInt(hlFloor);
+  const table  = f === 1 ? SEAT_1F : SEAT_2F;
+  const maxRow = f === 1 ? 20 : 10;
+  const L_RNG  = [1, 6];
+  const C_RNG  = f === 1 ? [7, 19] : [7, 17];
+  const R_RNG  = f === 1 ? [20, 25] : [18, 24];
 
-  let html = `<div style="overflow-x:auto;margin:8px 0;"><div style="font-size:9px;color:var(--text3);margin-bottom:4px;text-align:center;">${floorInt}층</div><div style="display:flex;flex-direction:column;gap:${GAP}px;align-items:center;">`;
+  function miniCell(row, num) {
+    if (!seatExists(f, row, num)) return `<div style="width:${C}px;height:${C}px;flex-shrink:0;"></div>`;
+    const k = `${f}-${row}-${num}`;
+    const cnt = seatMap[k] || 0;
+    const c = cls(cnt);
+    const isHL = row === parseInt(hlRow) && num === parseInt(hlNum);
+    return `<div class="seat-cell${c?' '+c:''}" style="width:${C}px;height:${C}px;${isHL?'outline:2px solid var(--accent);outline-offset:1px;z-index:1;position:relative;':''}" title="${f}층 ${row}열 ${num}번"></div>`;
+  }
+
+  let html = `<div style="overflow-x:auto;margin:8px 0;"><div style="font-size:9px;color:var(--text3);margin-bottom:4px;text-align:center;">${f}층</div><div style="display:inline-flex;flex-direction:column;gap:${GAP}px;">`;
   for (let row = 1; row <= maxRow; row++) {
     const isTargetRow = row === parseInt(hlRow);
     html += `<div style="display:flex;gap:${GAP}px;align-items:center;">`;
-    html += `<div style="width:16px;text-align:right;font-size:7px;color:${isTargetRow?'var(--accent)':'var(--text3)'};padding-right:2px;">${row}</div>`;
-    for (let seat = 1; seat <= maxNum; seat++) {
-      if (!seatExists(floorInt, row, seat)) continue;
-      const k = `${floorInt}-${row}-${seat}`;
-      const cnt = seatMap[k] || 0;
-      const c = cls(cnt);
-      const isHL = isTargetRow && seat === parseInt(hlNum);
-      html += `<div class="seat-cell${c?' '+c:''}" style="width:${C}px;height:${C}px;${isHL?'outline:2px solid var(--accent);outline-offset:1px;z-index:1;position:relative;':''}" title="${floorInt}층 ${row}열 ${seat}번"></div>`;
-    }
+    html += `<div style="width:14px;text-align:right;font-size:7px;color:${isTargetRow?'var(--accent)':'var(--text3)'};padding-right:2px;flex-shrink:0;">${row}</div>`;
+    for (let n = L_RNG[0]; n <= L_RNG[1]; n++) html += miniCell(row, n);
+    html += `<div style="width:${AISLE}px;flex-shrink:0;"></div>`;
+    for (let n = C_RNG[0]; n <= C_RNG[1]; n++) html += miniCell(row, n);
+    html += `<div style="width:${AISLE}px;flex-shrink:0;"></div>`;
+    for (let n = R_RNG[0]; n <= R_RNG[1]; n++) html += miniCell(row, n);
     html += '</div>';
   }
   html += '</div></div>';
@@ -1792,34 +1843,47 @@ function renderHeatmap() {
       seatMap[k] = (seatMap[k]||0) + 1;
     }
   });
-  const cls = c => !c ? '' : c >= 5 ? 'v5' : 'v' + c;
-  const floor    = _heatmapFloor;
-  const maxRow   = floor === 1 ? 20 : 10;
-  const maxNum   = floor === 1 ? 25 : 24;
-  const C = 11, GAP = 1;
+  const cls    = c => !c ? '' : c >= 5 ? 'v5' : 'v' + c;
+  const floor  = _heatmapFloor;
+  const maxRow = floor === 1 ? 20 : 10;
+  const C = 10, GAP = 1, AISLE = 5;
 
-  let html = `<div style="display:flex;flex-direction:column;gap:${GAP}px;align-items:center;">`;
-  // Column headers
-  html += `<div style="display:flex;gap:${GAP}px;align-items:center;margin-bottom:2px;">`;
-  html += `<div style="width:24px;"></div>`;
-  for (let num = 1; num <= maxNum; num++) {
-    html += `<div style="width:${C}px;text-align:center;font-size:7px;color:var(--text3);">${num%5===0?num:''}</div>`;
+  // 구역 범위
+  const L_RNG = [1, 6];
+  const C_RNG = floor === 1 ? [7, 19] : [7, 17];
+  const R_RNG = floor === 1 ? [20, 25] : [18, 24];
+
+  function hmCell(row, num) {
+    if (!seatExists(floor, row, num)) return `<div style="width:${C}px;height:${C}px;flex-shrink:0;"></div>`;
+    const k = `${floor}-${row}-${num}`;
+    const cnt = seatMap[k] || 0;
+    const c = cls(cnt);
+    return `<div class="seat-cell${c?' '+c:''}" style="width:${C}px;height:${C}px;" title="${floor}층 ${row}열 ${num}번 ${cnt}회"></div>`;
   }
+
+  // 헤더 (번호 레이블)
+  let html = `<div style="display:inline-flex;flex-direction:column;gap:${GAP}px;">`;
+  html += `<div style="display:flex;gap:${GAP}px;align-items:center;margin-bottom:2px;">`;
+  html += `<div style="width:26px;"></div>`;
+  for (let n = L_RNG[0]; n <= L_RNG[1]; n++)
+    html += `<div style="width:${C}px;text-align:center;font-size:7px;color:var(--text3);">${n}</div>`;
+  html += `<div style="width:${AISLE}px;text-align:center;font-size:7px;color:var(--text3);"> </div>`;
+  for (let n = C_RNG[0]; n <= C_RNG[1]; n++)
+    html += `<div style="width:${C}px;text-align:center;font-size:7px;color:var(--text3);">${n === C_RNG[0] || n === C_RNG[1] || n % 4 === 0 ? n : ''}</div>`;
+  html += `<div style="width:${AISLE}px;text-align:center;font-size:7px;color:var(--text3);"> </div>`;
+  for (let n = R_RNG[0]; n <= R_RNG[1]; n++)
+    html += `<div style="width:${C}px;text-align:center;font-size:7px;color:var(--text3);">${n}</div>`;
   html += `</div>`;
 
+  // 데이터 행
   for (let row = 1; row <= maxRow; row++) {
     html += `<div style="display:flex;gap:${GAP}px;align-items:center;">`;
-    html += `<div style="width:24px;text-align:right;font-size:8px;color:var(--text3);padding-right:3px;">${row}열</div>`;
-    for (let num = 1; num <= maxNum; num++) {
-      if (!seatExists(floor, row, num)) {
-        html += `<div style="width:${C}px;height:${C}px;flex-shrink:0;"></div>`;
-        continue;
-      }
-      const k = `${floor}-${row}-${num}`;
-      const cnt = seatMap[k] || 0;
-      const c = cls(cnt);
-      html += `<div class="seat-cell${c?' '+c:''}" style="width:${C}px;height:${C}px;" title="${floor}층 ${row}열 ${num}번 ${cnt}회"></div>`;
-    }
+    html += `<div style="width:26px;text-align:right;font-size:8px;color:var(--text3);padding-right:3px;flex-shrink:0;">${row}열</div>`;
+    for (let n = L_RNG[0]; n <= L_RNG[1]; n++) html += hmCell(row, n);
+    html += `<div style="width:${AISLE}px;flex-shrink:0;"></div>`;
+    for (let n = C_RNG[0]; n <= C_RNG[1]; n++) html += hmCell(row, n);
+    html += `<div style="width:${AISLE}px;flex-shrink:0;"></div>`;
+    for (let n = R_RNG[0]; n <= R_RNG[1]; n++) html += hmCell(row, n);
     html += '</div>';
   }
   html += '</div>';
