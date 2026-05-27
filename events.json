@@ -1,1 +1,10 @@
-[]
+[
+  {"name":"시겨줘, 명예보안관 No.1","startDate":"2026-07-01","endDate":"2026-07-05","color":"#C8823A"},
+  {"name":"Road to 다이아몬드 살롱","startDate":"2026-07-01","endDate":"2026-07-05","color":"#5870C4"},
+  {"name":"살롱 재재개장 초대장 업서 증정","startDate":"2026-07-01","endDate":"2026-07-05","color":"#8B6BC8"},
+  {"name":"살롱 재재개장 환영회","startDate":"2026-07-01","endDate":"2026-07-04","color":"#E04860"},
+  {"name":"시겨줘, 명예보안관 No.2","startDate":"2026-07-07","endDate":"2026-07-12","color":"#C8823A"},
+  {"name":"Road to 다이아몬드 살롱","startDate":"2026-07-07","endDate":"2026-07-12","color":"#5870C4"},
+  {"name":"커튼콜 WEEK","startDate":"2026-07-07","endDate":"2026-07-12","color":"#2AAAB0"},
+  {"name":"WANTED 프레임 투명 포토카드 증정","startDate":"2026-07-07","endDate":"2026-07-12","color":"#E080A8"}
+]
