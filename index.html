@@ -823,6 +823,20 @@
         </label>
       </div>
     </div>
+    <div class="form-group" style="margin-top:10px;">
+      <label class="form-label">도장 수량</label>
+      <div style="display:flex;gap:8px;">
+        <label style="flex:1;display:flex;align-items:center;justify-content:center;gap:5px;padding:7px;border:1.5px solid var(--accent);border-radius:8px;cursor:pointer;font-size:13px;color:var(--accent);font-weight:700;" id="stamp-qty-label-1">
+          <input type="radio" name="stamp-qty" value="1" checked onchange="updateStampQtyLabel()"> 1개
+        </label>
+        <label style="flex:1;display:flex;align-items:center;justify-content:center;gap:5px;padding:7px;border:1.5px solid var(--border);border-radius:8px;cursor:pointer;font-size:13px;" id="stamp-qty-label-2">
+          <input type="radio" name="stamp-qty" value="2" onchange="updateStampQtyLabel()"> 2개
+        </label>
+        <label style="flex:1;display:flex;align-items:center;justify-content:center;gap:5px;padding:7px;border:1.5px solid var(--border);border-radius:8px;cursor:pointer;font-size:13px;" id="stamp-qty-label-3">
+          <input type="radio" name="stamp-qty" value="3" onchange="updateStampQtyLabel()"> 3개
+        </label>
+      </div>
+    </div>
     <div class="form-group" id="stamp-exchange-memo-group" style="display:none;">
       <label class="form-label">교환 내용</label>
       <input type="text" class="form-control" id="stamp-exchange-memo" placeholder="교환 내용 입력">
@@ -2238,6 +2252,23 @@ function updateStampMethodUI() {
   const method = document.querySelector('input[name="stamp-method"]:checked')?.value;
   const exchangeMemoGroup = document.getElementById('stamp-exchange-memo-group');
   if (exchangeMemoGroup) exchangeMemoGroup.style.display = method === '교환' ? '' : 'none';
+  const qtyMap = { '직접 관람': 1, '더블 적립': 2, '트리플 적립': 3, '교환': 1 };
+  const autoQty = qtyMap[method] || 1;
+  const qtyEl = document.querySelector(`input[name="stamp-qty"][value="${autoQty}"]`);
+  if (qtyEl) { qtyEl.checked = true; updateStampQtyLabel(); }
+}
+
+function updateStampQtyLabel() {
+  const checked = document.querySelector('input[name="stamp-qty"]:checked');
+  if (!checked) return;
+  const qty = checked.value;
+  [1,2,3].forEach(n => {
+    const label = document.getElementById('stamp-qty-label-' + n); if (!label) return;
+    const active = String(n) === qty;
+    label.style.borderColor = active ? 'var(--accent)' : 'var(--border)';
+    label.style.color       = active ? 'var(--accent)' : '';
+    label.style.fontWeight  = active ? '700' : '';
+  });
 }
 
 function applyStampToBoard(boardId, qty, date, historyComment, comment) {
@@ -2271,9 +2302,8 @@ function applyStampToBoard(boardId, qty, date, historyComment, comment) {
 function addStamp() {
   const boardId = document.getElementById('stamp-board-id').value;
   const method  = document.querySelector('input[name="stamp-method"]:checked').value;
-  // 방식별 수량 자동 결정
-  const qtyMap  = { '직접 관람': 1, '더블 적립': 2, '트리플 적립': 3, '교환': 1 };
-  const qty     = qtyMap[method] || 1;
+  const qtyEl   = document.querySelector('input[name="stamp-qty"]:checked');
+  const qty     = qtyEl ? (parseInt(qtyEl.value) || 1) : 1;
   const dateEl  = document.getElementById('stamp-date');
   const date    = dateEl && dateEl.value ? dateEl.value : localDate();
   const exchangeMemo = document.getElementById('stamp-exchange-memo')?.value.trim() || '';
